@@ -1,3 +1,4 @@
+from Collisions import point_inside_poly, poly_inside_poly
 from Constants import *
 from time import time
 from Bullets import *
@@ -7,8 +8,7 @@ class Saucer():
 		self.nlines = 20
 		self.lines = []
 		self.extremes = []
-		self.offset = [(randint(0,RAND_MAX) % SCREENWIDTH) - SCREENWIDTH,
-					(randint(0,RAND_MAX) % SCREENHEIGHT) - SCREENHEIGHT]	# Spawns on the sides of the screen
+		self.offset = [choice([0,SCREENWIDTH]), randint(0, RAND_MAX) % SCREENHEIGHT]	# Spawns on the sides of the screen
 		self.size = size
 		self.theta = 0
 		self.bullets = []
@@ -69,7 +69,31 @@ class Saucer():
 				self.extremes.append(24)	# Max y
 	
 	def check_collision(self, saucerList, ship):
-		pass
+		# Collision between ship and saucer
+		if (poly_inside_poly(ship.lines, self.lines, ship.offset, self.offset, ship.nlines, self.nlines)):
+			match (self.size):
+				case ('SAUCER_LARGE'):
+					ship.score += 200
+				case ('SAUCER_SMALL'):
+					ship.score += 1000
+			ship.destroy()
+			self.destroy(saucerList)
+		else:	# Collision between ship bullets and saucer
+			for i, bullet in enumerate(ship.bullets):
+				if (point_inside_poly(bullet.offset, self.lines, self.offset, self.nlines)):
+					match (self.size):
+						case ('SAUCER_LARGE'):
+							ship.score += 200
+						case ('SAUCER_SMALL'):
+							ship.score += 1000
+					self.destroy(saucerList)
+					ship.free_bullet(i)
+		
+		# Collision between saucer bullets and ship
+		for i, bullet in enumerate(self.bullets):
+			if (point_inside_poly(bullet.offset, self.lines, self.offset, self.nlines)):
+				ship.destroy()
+				self.free_bullet(i)
 	
 	def update(self, saucerList, ship, scene):
 		self.offset[0] += self.velocity[0]
@@ -125,7 +149,7 @@ def spawn_saucers(saucerList, ship):
 		elif (ship.score >= 40000):
 			newSaucer = Saucer('SAUCER_SMALL')
 		else:
-			match (randint(0,RAND_MAX) % 2 + 1):
+			match (choice([1,2])):
 				case (1):
 					newSaucer = Saucer('SAUCER_SMALL')
 				case (2):

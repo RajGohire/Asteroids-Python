@@ -169,7 +169,7 @@ class Asteroid():
 				tempOffset = self.offset
 				idx = asteroidList.index(self)
 				self.lines.clear()
-				self = Asteroid('ASTEROID_MEDIUM')
+				self.__dict__.update(Asteroid('ASTEROID_MEDIUM').__dict__)
 				self.offset = tempOffset
 				asteroidList[idx] = self
 			case ('ASTEROID_MEDIUM'):
@@ -180,7 +180,7 @@ class Asteroid():
 				tempOffset = self.offset
 				idx = asteroidList.index(self)
 				self.lines.clear()
-				self = Asteroid('ASTEROID_SMALL')
+				self.__dict__.update(Asteroid('ASTEROID_SMALL').__dict__)
 				self.offset = tempOffset
 				asteroidList[idx] = self
 			case (_):

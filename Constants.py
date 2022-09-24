@@ -2,7 +2,7 @@ import pygame as pg
 import gc
 from dataclasses import dataclass
 from math import pi as PI, cos, sin, atan2
-from random import randint, random
+from random import randint, random, choice
 
 # Window Dimensions
 SCREENWIDTH = 1280
@@ -22,9 +22,9 @@ ASTEROID_SPEED_MEDIUM = 2
 ASTEROID_SPEED_LARGE = 1
 MAX_ASTEROIDS = 26
 
-SAUCER_SPEED = 0.6
-SAUCER_SPEED_SMALL = 0.4
-SAUCER_SPEED_LARGE = 0.3
+SAUCER_SPEED = 6
+SAUCER_SPEED_SMALL = 5
+SAUCER_SPEED_LARGE = 4
 MAX_SAUCERS = 1
 MAX_SAUCERS_SMALL = 1
 MAX_SAUCERS_LARGE = 1

@@ -18,7 +18,7 @@ def main():
 	currentScore = 0
 	asteroid_timeUpdateCounter = saucer_timeUpdateCounter = 0
 	level = 1
-	thrusting = 0
+	thrusting = False
 
 	currentTime = perf_counter()
 	prevTime = 0
@@ -93,11 +93,10 @@ def main():
 					ship.rotate(delta, SHIP_DIR_RIGHT)
 				if (keystate[pg.K_UP]):
 					ship.move(delta)
-					print("thrusting", ship.velocity)
-					thrusting = 1
+					thrusting = True
 				else:
 					# ship.lines[11] = ship.lines[13] = [0,4]
-					thrusting = 0
+					thrusting = False
 				'''if (keystate[pg.K_ESCAPE]):
 					scene = 'MAINMENU'
 					del(ship)
@@ -108,7 +107,6 @@ def main():
 				ship.update()
 		
 		for asteroid in asteroidList:
-			print(asteroid.lines[0], asteroid.size, asteroid)
 			asteroid.update(asteroidList, ship, saucerList, scene)
 
 		for saucer in saucerList:
@@ -146,6 +144,7 @@ def main():
 					elif ((currentScore//10000) + 1 == ship.score//10000):
 						ship.lives += 1
 					currentScore = ship.score
+					print("Score:", currentScore)
 					'''You can change the format string to:
 						- "%05d", to make it pad the string up to 5 characters with '0's
 						- "%5d", to right-align the number'''
