@@ -1,5 +1,6 @@
 from Constants import *
 from Collisions import *
+from Audio import *
 
 class Asteroid():
 	def __init__(self, size):
@@ -108,7 +109,7 @@ class Asteroid():
 				self.extremes.append(40)	# Max x
 				self.extremes.append(35)	# Max y
 
-	def check_ship_collision(self, asteroidList, ship):
+	def check_ship_collision(self, asteroidList, ship, st):
 		# Collision between ship and asteroid
 		if (poly_inside_poly(ship.lines, self.lines, ship.offset, self.offset, ship.nlines, self.nlines)):
 			match (self.size):
@@ -118,7 +119,7 @@ class Asteroid():
 					ship.score += 50
 				case ('ASTEROID_SMALL'):
 					ship.score += 100
-			ship.destroy()
+			ship.destroy(st)
 			self.destroy(asteroidList)
 		else:	# Collision between ship bullets and asteroid
 			for i, bullet in enumerate(ship.bullets):
@@ -130,21 +131,21 @@ class Asteroid():
 							ship.score += 50
 						case ('ASTEROID_SMALL'):
 							ship.score += 100
-					self.split(asteroidList)
+					self.split(asteroidList, st)
 					ship.free_bullet(i)
 
-	def check_saucer_collision(self, asteroidList, saucer, saucerList):
+	def check_saucer_collision(self, asteroidList, saucer, saucerList, st):
 		# Collision between saucer and asteroid
 		if (poly_inside_poly(saucer.lines, self.lines, saucer.offset, self.offset, saucer.nlines, self.nlines)):
-			saucer.destroy(saucerList)
+			saucer.destroy(saucerList, st)
 			self.destroy(asteroidList)
 		else:	# Collision between saucer bullets and asteroid
 			for i, bullet in enumerate(saucer.bullets):
 				if (point_inside_poly(bullet.offset, self.lines, self.offset, self.nlines)):
-					self.split(asteroidList)
+					self.split(asteroidList, st)
 					saucer.free_bullet(i)
 
-	def update(self, asteroidList, ship, saucerList, scene):
+	def update(self, asteroidList, ship, saucerList, scene, st):
 		# self.theta += 0.01
 		self.offset[0] += self.velocity[0]
 		self.offset[1] += self.velocity[1]
@@ -155,13 +156,14 @@ class Asteroid():
 		if (self.offset[1] < 0):			self.offset[1] = SCREENHEIGHT
 
 		if (scene == 'INGAME'):
-			self.check_ship_collision(asteroidList, ship)
+			self.check_ship_collision(asteroidList, ship, st)
 			for saucer in saucerList:
-				self.check_saucer_collision(asteroidList, saucer, saucerList)
+				self.check_saucer_collision(asteroidList, saucer, saucerList, st)
 
-	def split(self, asteroidList):
+	def split(self, asteroidList, st):
 		match (self.size):
 			case ('ASTEROID_LARGE'):
+				pg.mixer.Channel(4).play(st.soundSamples[4])
 				if (len(asteroidList) != MAX_ASTEROIDS):
 					newAsteroid = Asteroid('ASTEROID_MEDIUM')
 					newAsteroid.offset = [self.offset[0], self.offset[1]]
@@ -173,6 +175,7 @@ class Asteroid():
 				self.offset = tempOffset
 				asteroidList[idx] = self
 			case ('ASTEROID_MEDIUM'):
+				pg.mixer.Channel(3).play(st.soundSamples[3])
 				if (len(asteroidList) != MAX_ASTEROIDS):
 					newAsteroid = Asteroid('ASTEROID_SMALL')
 					newAsteroid.offset = [self.offset[0], self.offset[1]]
@@ -184,6 +187,7 @@ class Asteroid():
 				self.offset = tempOffset
 				asteroidList[idx] = self
 			case (_):
+				pg.mixer.Channel(2).play(st.soundSamples[2])
 				self.destroy(asteroidList)
 
 	def destroy(self, asteroidList):

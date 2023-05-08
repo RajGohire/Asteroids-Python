@@ -12,6 +12,7 @@ class Saucer():
 		self.size = size
 		self.theta = 0
 		self.bullets = []
+		self.soundFX = False
 		# self.bulletsOrder = [-1] * MAX_SAUCER_BULLETS
 
 		match (size):
@@ -68,7 +69,7 @@ class Saucer():
 				self.extremes.append(40)	# Max x
 				self.extremes.append(24)	# Max y
 	
-	def check_collision(self, saucerList, ship):
+	def check_collision(self, saucerList, ship, st):
 		# Collision between ship and saucer
 		if (poly_inside_poly(ship.lines, self.lines, ship.offset, self.offset, ship.nlines, self.nlines)):
 			match (self.size):
@@ -76,8 +77,8 @@ class Saucer():
 					ship.score += 200
 				case ('SAUCER_SMALL'):
 					ship.score += 1000
-			ship.destroy()
-			self.destroy(saucerList)
+			ship.destroy(st)
+			self.destroy(saucerList, st)
 		else:	# Collision between ship bullets and saucer
 			for i, bullet in enumerate(ship.bullets):
 				if (point_inside_poly(bullet.offset, self.lines, self.offset, self.nlines)):
@@ -86,16 +87,16 @@ class Saucer():
 							ship.score += 200
 						case ('SAUCER_SMALL'):
 							ship.score += 1000
-					self.destroy(saucerList)
+					self.destroy(saucerList, st)
 					ship.free_bullet(i)
 		
 		# Collision between saucer bullets and ship
 		for i, bullet in enumerate(self.bullets):
 			if (point_inside_poly(bullet.offset, self.lines, self.offset, self.nlines)):
-				ship.destroy()
+				ship.destroy(st)
 				self.free_bullet(i)
 	
-	def update(self, saucerList, ship, scene):
+	def update(self, saucerList, ship, scene, st):
 		self.offset[0] += self.velocity[0]
 		self.offset[1] += self.velocity[1]
 
@@ -105,7 +106,13 @@ class Saucer():
 		if (self.offset[1] < 0):			self.offset[1] = SCREENHEIGHT
 		
 		if (scene == 'INGAME'):
-			self.check_collision(saucerList, ship)
+			if (not self.soundFX and self.size == 'SAUCER_SMALL'):
+				pg.mixer.Channel(8).play(st.soundSamples[8], -1)
+				self.soundFX = True
+			elif (not self.soundFX and self.size == 'SAUCER_LARGE'):
+				pg.mixer.Channel(9).play(st.soundSamples[9], -1)
+				self.soundFX = True
+			self.check_collision(saucerList, ship, st)
 	
 	'''def find_free_bullet_index(self):
 		for _ in range(MAX_SAUCER_BULLETS):
@@ -136,8 +143,14 @@ class Saucer():
 		_ = self.bullets.pop(i)
 		del (_)
 
-	def destroy(self, saucerList):
+	def destroy(self, saucerList, st):
 		# self.lines.clear()
+		if (self.soundFX and self.size == 'SAUCER_SMALL'):
+			pg.mixer.Channel(8).stop()
+			self.soundFX = False
+		elif (self.soundFX and self.size == 'SAUCER_LARGE'):
+			pg.mixer.Channel(9).stop()
+			self.soundFX = False
 		_ = saucerList.pop(saucerList.index(self))
 		del (_)
 	

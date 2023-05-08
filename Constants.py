@@ -3,10 +3,17 @@ import gc
 from dataclasses import dataclass
 from math import pi as PI, cos, sin, atan2
 from random import randint, random, choice
+import os
 
 # Window Dimensions
 SCREENWIDTH = 1280
 SCREENHEIGHT = 720
+
+# Text
+CHAR_SPACE = 4
+WORD_SPACE = 20
+CHAR_WIDTH = 20
+CHAR_HEIGHT = 30
 
 # Colours
 BLACK = (  0,   0,   0)
@@ -14,6 +21,11 @@ WHITE = (255, 255, 255)
 BLUE =  (  0,   0, 255)
 GREEN = (  0, 255,   0)
 RED =   (255,   0,   0)
+
+# Audio
+SOUNDTRACK_MIN_DELAY = 230
+SOUNDTRACK_MAX_DELAY = 1000
+SOUNDTRACK_GRADIENT = -0.01
 
 # Game Constants
 ASTEROID_SPEED = 4

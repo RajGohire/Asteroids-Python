@@ -2,12 +2,13 @@ from Constants import *
 # from numpy import add
 from time import time
 from Bullets import *
+from Audio import *
 
 class Ship():
 	def __init__(self):
-		self.nlines = 6
+		self.nlines = 9
 		# self.lines = malloc(sizeof(vec2f_t) * 2 * ship->nlines) // Two coords per line
-		self.lines = [[0, -15], [10, 10], [2, 4], [-2, 4], [-10, 10], [0, -15]]
+		self.lines = [[-10,10], [0,-15], [10,10], [2,4], [-2,4], [-10,10], [-4,5], [0,4], [4,5]]
 		self.bullets = []
 		# self.bullets_order = [-1] * MAX_BULLETS
 		self.offset = [SCREENWIDTH/2,SCREENHEIGHT/2]
@@ -46,8 +47,7 @@ class Ship():
 
 		self.velocity[0] += dx
 		self.velocity[1] += dy
-		# ship->lines[11] = (vec2f_t){0,13};
-    	# ship->lines[13] = (vec2f_t){0,13};
+		self.lines[-2] = [0,13]
 
 	def rotate(self, deltaTime, dir):
 		self.theta += dir * deltaTime/300
@@ -67,7 +67,7 @@ class Ship():
 		self.offset = [randint(0,RAND_MAX) % SCREENWIDTH, randint(0,RAND_MAX) % SCREENHEIGHT]
 		# self.velocity = [0,0]
 	
-	def shoot(self):
+	def shoot(self, st):
 		x = sin(self.theta) * BULLET_SPEED
 		y = -cos(self.theta) * BULLET_SPEED
 		newBullet = Bullet(self.offset, [x,y], self.theta, time())
@@ -75,17 +75,20 @@ class Ship():
 		if (len(self.bullets) >= MAX_BULLETS):
 			self.free_bullet(0)
 		self.bullets.append(newBullet)
+
+		pg.mixer.Channel(5).play(st.soundSamples[5])
 	
 	def free_bullet(self, i):
 		_ = self.bullets.pop(i)
 		del (_)
 
-	def destroy(self):
+	def destroy(self, st):
+		pg.mixer.Channel(3).play(st.soundSamples[3])
 		self.lines.clear()
 		self.bullets.clear()
 		if (self.lives > 0):
 			currentLives = self.lives
 			currentScore = self.score
 			self.__init__()
-			self.lives = currentLives
+			self.lives = currentLives-1
 			self.score = currentScore

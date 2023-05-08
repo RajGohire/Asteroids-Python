@@ -7,7 +7,7 @@ class Bullet():
 		self.velocity = velocity
 		self.bulletTime = bulletTime
 		self.nlines = 5
-		self.lines = [(0, 0), (-2, -3), (0, -6), (2, -3), (0, 0)]
+		self.lines = [[0,0], [-2,-3], [0,-6], [2,-3], [0,0]]
 		self.theta = theta
 	
 	def passbyval(func):
